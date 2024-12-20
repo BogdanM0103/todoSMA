@@ -21,6 +21,8 @@ class MainActivity : ComponentActivity() {
         lateinit var dataBase: AppDatabase
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,8 +36,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TodoSMATheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    AddUserScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
