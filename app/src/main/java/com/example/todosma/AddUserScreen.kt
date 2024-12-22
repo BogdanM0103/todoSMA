@@ -26,6 +26,7 @@ fun AddUserScreen(
 ) {
     // State for the username field
     var username by remember { mutableStateOf("") }
+    var userList by remember { mutableStateOf<List<String>>(emptyList()) }
 
     Box(
         modifier = Modifier
@@ -58,6 +59,38 @@ fun AddUserScreen(
             }) {
                 Text(text = "Submit!")
             }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val users = MainActivity.dataBase.userDao().getAllUsers()
+                        withContext(Dispatchers.Main) {
+                            userList = users.map { it.username }
+                        }
+                    }
+                }
+            ) {
+                Text(text = "Show Usernames")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        userList.forEach { user ->
+            TextField(
+                value = user,
+                onValueChange = {},
+                enabled = false,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            )
         }
     }
 }
