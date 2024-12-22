@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.example.todosma.MainActivity.Companion.dataBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ fun AddUserScreen(
     // State for the username field
     var username by remember { mutableStateOf("") }
     var userList by remember { mutableStateOf(emptyList<String>()) } // Ensure it's a List<String>
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -82,6 +84,19 @@ fun AddUserScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Show Usernames")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Delete database button
+            Button(
+                onClick = {
+                    context.deleteDatabase("my_database") // Use LocalContext to access the database
+                    userList = emptyList() // Clear UI
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Delete Database")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
