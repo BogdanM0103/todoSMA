@@ -3,9 +3,7 @@ package com.example.todosma
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -13,12 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.remember
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.example.todosma.MainActivity.Companion.dataBase
+import com.example.todosma.MainActivity.Companion.database
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,8 +55,12 @@ fun AddUserScreen(
             // Submit button to add user
             Button(onClick = {
                 val newUser = User(username = username)
+                val userId = database.push().key
                 CoroutineScope(Dispatchers.IO).launch {
                     MainActivity.dataBase.userDao().insertUser(newUser)
+                    if (userId != null) {
+                        database.child("users").child(userId).setValue(newUser)
+                    }
                 }
             }) {
                 Text(text = "Submit!")

@@ -12,16 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.example.todosma.ui.theme.TodoSMATheme
+import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 
 class MainActivity : ComponentActivity() {
 
     companion object {
         lateinit var dataBase: AppDatabase
+        lateinit var database: DatabaseReference
     }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +32,8 @@ class MainActivity : ComponentActivity() {
             AppDatabase::class.java,
             "my_database",
         ).build()
+
+        database = Firebase.database.reference
 
         enableEdgeToEdge()
         setContent {
