@@ -67,6 +67,9 @@ fun AddUserScreen(
                         // Store in Firebase if the device is online
                         if (userId != null) {
                             MainActivity.database.child("users").child(userId).setValue(newUser)
+                                .addOnFailureListener {
+                                    Log.e("AddUser", "Failed to add user to Firebase", it)
+                                }
                         }
                     } else {
                         // Show a message to the user if offline
