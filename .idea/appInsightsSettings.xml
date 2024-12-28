@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.todosma" />
-                  <option name="mobileSdkAppId" value="1:453200504952:android:6b74ed9ce07e333d00258d" />
-                  <option name="projectId" value="todosma-81059" />
-                  <option name="projectNumber" value="453200504952" />
+                  <option name="mobileSdkAppId" value="1:766607022702:android:ecccca83b1dd1913d2247f" />
+                  <option name="projectId" value="mysmatodo" />
+                  <option name="projectNumber" value="766607022702" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

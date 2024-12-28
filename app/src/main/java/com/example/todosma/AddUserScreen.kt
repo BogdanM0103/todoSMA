@@ -87,28 +87,42 @@ fun AddUserScreen(
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
-            // Fetch users button
             Button(
                 onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
+                        // Fetch data from Room first
                         val roomUsers = MainActivity.dataBase.userDao().getAllUsers().map { it.username }
-                        val firebaseUsers = mutableListOf<String>()
 
-                        MainActivity.database.child("users").get()
-                            .addOnSuccessListener { snapshot ->
+                        if (isInternetAvailable(context)) {
+                            // Fetch data from Firebase and merge it with Room data
+                            MainActivity.database.child("users").get().addOnSuccessListener { snapshot ->
+                                val firebaseUsers = mutableListOf<String>()
                                 snapshot.children.forEach {
                                     val user = it.getValue(User::class.java)
                                     if (user != null) {
                                         firebaseUsers.add(user.username)
                                     }
-                            }
+                                }
 
-                            CoroutineScope(Dispatchers.Main).launch {
-                                userList = (roomUsers + firebaseUsers).distinct()
+                                // Merge Room and Firebase data, remove duplicates, and update the UI
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    userList = (roomUsers + firebaseUsers).distinct()
+                                }
+                            }.addOnFailureListener {
+                                // Handle Firebase fetch failure
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    userList = roomUsers // Fallback to Room data only
+                                }
+                            }
+                        } else {
+                            // No internet, show Room data only
+                            withContext(Dispatchers.Main) {
+                                userList = roomUsers
                             }
                         }
                     }
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Show Usernames")
             }
@@ -116,11 +130,27 @@ fun AddUserScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Delete database button
             Button(
                 onClick = {
-                    context.deleteDatabase("my_database") // Use LocalContext to access the database
-                    userList = emptyList() // Clear UI
+                    CoroutineScope(Dispatchers.IO).launch {
+                        // Step 1: Clear Room database
+                        MainActivity.dataBase.clearAllTables()
+
+                        // Step 2: Clear Firebase database
+                        MainActivity.database.child("users").removeValue()
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Log.d("DeleteDatabase", "Firebase database cleared successfully.")
+                                } else {
+                                    Log.e("DeleteDatabase", "Failed to clear Firebase database.", task.exception)
+                                }
+                            }
+
+                        // Step 3: Clear UI data
+                        withContext(Dispatchers.Main) {
+                            userList = emptyList()
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

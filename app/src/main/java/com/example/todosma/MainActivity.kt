@@ -35,6 +35,9 @@ class MainActivity : ComponentActivity() {
 
         database = Firebase.database.reference
 
+        // Register network callback to sync Room with Firebase when the internet is restored
+        registerNetworkCallback(this)
+
         enableEdgeToEdge()
         setContent {
             TodoSMATheme {
