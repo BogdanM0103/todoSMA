@@ -7,6 +7,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 
+// Handles internet connectivity and returns boolean based on the result
 @OptIn(UnstableApi::class)
 fun isInternetAvailable(context: Context): Boolean {
     return try {

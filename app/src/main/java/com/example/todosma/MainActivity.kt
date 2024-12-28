@@ -29,12 +29,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        // Creating the local database Room
         dataBase = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "my_database",
         ).build()
 
+
+        // Creating the remote database Firebase
         database = Firebase.database.reference
 
         // Register network callback to sync Room with Firebase when the internet is restored

@@ -42,7 +42,7 @@ fun AddUserScreen(
                 .align(Alignment.TopCenter)
                 .padding(50.dp)
         ) {
-            // Input for username
+            // Input Box for username
             TextField(
                 value = username,
                 onValueChange = { username = it },
@@ -74,7 +74,6 @@ fun AddUserScreen(
                     } else {
                         // Show a message to the user if offline
                         withContext(Dispatchers.Main) {
-                            // Replace this with a Toast or Snackbar for better UX
                             println("No internet connection. Data saved in Room only.")
                         }
                     }
@@ -90,6 +89,7 @@ fun AddUserScreen(
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         ) {
+            // Show Usernames Button
             Button(
                 onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -133,6 +133,8 @@ fun AddUserScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
+            // Delete Database Button
             Button(
                 onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
