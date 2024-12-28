@@ -1,5 +1,6 @@
 package com.example.todosma
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -55,11 +56,24 @@ fun AddUserScreen(
             // Submit button to add user
             Button(onClick = {
                 val newUser = User(username = username)
-                val userId = database.push().key
+                val userId = MainActivity.database.push().key
+                val isOnline = isInternetAvailable(context)
+
                 CoroutineScope(Dispatchers.IO).launch {
+                    // Always store in Room
                     MainActivity.dataBase.userDao().insertUser(newUser)
-                    if (userId != null) {
-                        database.child("users").child(userId).setValue(newUser)
+
+                    if (isOnline) {
+                        // Store in Firebase if the device is online
+                        if (userId != null) {
+                            MainActivity.database.child("users").child(userId).setValue(newUser)
+                        }
+                    } else {
+                        // Show a message to the user if offline
+                        withContext(Dispatchers.Main) {
+                            // Replace this with a Toast or Snackbar for better UX
+                            println("No internet connection. Data saved in Room only.")
+                        }
                     }
                 }
             }) {
@@ -77,16 +91,28 @@ fun AddUserScreen(
             Button(
                 onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val users = MainActivity.dataBase.userDao().getAllUsers()
-                        withContext(Dispatchers.Main) {
-                            userList = users.map { it.username } // Ensure this returns a List<String>
+                        val roomUsers = MainActivity.dataBase.userDao().getAllUsers().map { it.username }
+                        val firebaseUsers = mutableListOf<String>()
+
+                        MainActivity.database.child("users").get()
+                            .addOnSuccessListener { snapshot ->
+                                snapshot.children.forEach {
+                                    val user = it.getValue(User::class.java)
+                                    if (user != null) {
+                                        firebaseUsers.add(user.username)
+                                    }
+                            }
+
+                            CoroutineScope(Dispatchers.Main).launch {
+                                userList = (roomUsers + firebaseUsers).distinct()
+                            }
                         }
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
+                }
             ) {
                 Text(text = "Show Usernames")
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
